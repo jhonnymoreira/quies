@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm build*)",
+      "Bash(pnpm code*)",
+      "Bash(pnpm db*)",
+      "Bash(pnpm start)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm exec hono *)",
+      "WebFetch(domain:orm.drizzle.team)",
+      "WebFetch(domain:zod.dev)"
+    ],
+    "deny": ["Read(.env)"]
+  },
+  "outputStyle": "default"
+}
