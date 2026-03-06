@@ -13,6 +13,7 @@ A type-safe medspa management API using Node.js, TypeScript, Hono, Drizzle and Z
 - [AI Usage](#ai-usage)
 - [Assumptions](#assumptions)
 - [Tradeoffs](#tradeoffs)
+- [SQL migrations](#sql-migrations)
 - [Scope decisions](#scope-decisions)
 - [Scope Change Scenario](#scope-change-scenario)
 
@@ -23,8 +24,8 @@ A type-safe medspa management API using Node.js, TypeScript, Hono, Drizzle and Z
 ### Requirements
 
 - Docker and Docker Compose
-      <!-- - Node.js v24 (`nvm` is recommended and supported) -->
-      <!-- - `pnpm` (via `corepack enable pnpm`) -->
+  <!-- - Node.js v24 (`nvm` is recommended and supported) -->
+  <!-- - `pnpm` (via `corepack enable pnpm`) -->
 
 ### How to run
 
@@ -94,8 +95,24 @@ This setup was key to ensure the focus was on the data modelling, the API contra
 - Node.js/TypeScript with Hono in this app, instead of Python with Flask (or FastAPI), due to my familiarity with the JavaScript environment, allowing me to move faster, and spec the application behavior correctly (type-safe, focused on data integrity).
 - Direct usage of `tsx` to run the application in the Docker entrypoints to avoid a build process.
 - ORM usage (via Drizzle) for end-to-end type-safety and using the database as the source-of-truth.
-- Heavy usage of procedures and triggers to ensure that the data logic lives directly in the database, while reinforcing it at the application level.
+- Heavy usage of procedures and triggers to ensure that the data logic lives directly in the database, while reinforcing it at the application level. See [SQL migrations](#sql-migrations) for details.
 - Unit testing and integration testing with `testcontainers` (PostgreSQL containers)
+
+---
+
+## SQL migrations
+
+Custom SQL migrations live in [`drizzle/migrations/`](./drizzle/migrations/) and enforce data integrity at the database level:
+
+| Migration                                                                                                   | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`0001_not_empty_constraints`](./drizzle/migrations/0001_not_empty_constraints.sql)                         | `CHECK` constraints ensuring non-empty trimmed values on `medspas` and `services` columns                           |
+| [`0002_description_max_length`](./drizzle/migrations/0002_description_max_length.sql)                       | `CHECK` constraint limiting `services.description` to 500 characters                                                |
+| [`0003_freeze_terminal_appointments`](./drizzle/migrations/0003_freeze_terminal_appointments.sql)           | Trigger preventing updates on `completed`/`canceled` appointments (except soft-delete)                              |
+| [`0004_validate_appointment_start_time`](./drizzle/migrations/0004_validate_appointment_start_time.sql)     | Trigger ensuring `appointments.start_time` is in the future on insert and update                                    |
+| [`0005_guard_appointment_services_status`](./drizzle/migrations/0005_guard_appointment_services_status.sql) | Trigger preventing insert/delete on `appointments_services` when the appointment is not `scheduled`                 |
+| [`0006_set_updated_at`](./drizzle/migrations/0006_set_updated_at.sql)                                       | Trigger auto-setting `updated_at` on row updates for `medspas`, `services`, and `appointments`                      |
+| [`0007_soft_delete`](./drizzle/migrations/0007_soft_delete.sql)                                             | Trigger converting `DELETE` into a soft-delete (`deleted_at = NOW()`) for `medspas`, `services`, and `appointments` |
 
 ---
 
