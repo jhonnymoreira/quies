@@ -1,0 +1,448 @@
+{
+  "id": "a63c27b4-e632-45d8-bd92-0c6297ee5f96",
+  "prevId": "58690692-74c0-4c60-81d3-ecb8e15365c5",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.appointments_services": {
+      "name": "appointments_services",
+      "schema": "",
+      "columns": {
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "service_id": {
+          "name": "service_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "medspa_id": {
+          "name": "medspa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "appointments_services_appointment_fk": {
+          "name": "appointments_services_appointment_fk",
+          "tableFrom": "appointments_services",
+          "columnsFrom": [
+            "appointment_id",
+            "medspa_id"
+          ],
+          "tableTo": "appointments",
+          "columnsTo": [
+            "id",
+            "medspa_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "appointments_services_service_fk": {
+          "name": "appointments_services_service_fk",
+          "tableFrom": "appointments_services",
+          "columnsFrom": [
+            "service_id",
+            "medspa_id"
+          ],
+          "tableTo": "services",
+          "columnsTo": [
+            "id",
+            "medspa_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "appointments_services_appointment_id_service_id_pk": {
+          "name": "appointments_services_appointment_id_service_id_pk",
+          "columns": [
+            "appointment_id",
+            "service_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "appointments_services_price_positive": {
+          "name": "appointments_services_price_positive",
+          "value": "\"appointments_services\".\"price\" > 0"
+        },
+        "appointments_services_duration_positive": {
+          "name": "appointments_services_duration_positive",
+          "value": "\"appointments_services\".\"duration\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.appointments": {
+      "name": "appointments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "medspa_id": {
+          "name": "medspa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "appointment_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scheduled'"
+        },
+        "total_duration": {
+          "name": "total_duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_price": {
+          "name": "total_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scheduled_at": {
+          "name": "scheduled_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "canceled_at": {
+          "name": "canceled_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "appointments_medspa_id_medspas_id_fk": {
+          "name": "appointments_medspa_id_medspas_id_fk",
+          "tableFrom": "appointments",
+          "columnsFrom": [
+            "medspa_id"
+          ],
+          "tableTo": "medspas",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "appointments_id_medspa_id_unique": {
+          "name": "appointments_id_medspa_id_unique",
+          "columns": [
+            "id",
+            "medspa_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "appointments_total_duration_positive": {
+          "name": "appointments_total_duration_positive",
+          "value": "\"appointments\".\"total_duration\" > 0"
+        },
+        "appointments_total_price_positive": {
+          "name": "appointments_total_price_positive",
+          "value": "\"appointments\".\"total_price\" > 0"
+        },
+        "appointments_status_scheduled_consistency": {
+          "name": "appointments_status_scheduled_consistency",
+          "value": "\"appointments\".\"status\" != 'scheduled' OR (\"appointments\".\"scheduled_at\" IS NOT NULL AND \"appointments\".\"completed_at\" IS NULL AND \"appointments\".\"canceled_at\" IS NULL)"
+        },
+        "appointments_status_completed_consistency": {
+          "name": "appointments_status_completed_consistency",
+          "value": "\"appointments\".\"status\" != 'completed' OR (\"appointments\".\"scheduled_at\" IS NOT NULL AND \"appointments\".\"completed_at\" IS NOT NULL AND \"appointments\".\"canceled_at\" IS NULL)"
+        },
+        "appointments_status_canceled_consistency": {
+          "name": "appointments_status_canceled_consistency",
+          "value": "\"appointments\".\"status\" != 'canceled' OR (\"appointments\".\"scheduled_at\" IS NOT NULL AND \"appointments\".\"completed_at\" IS NULL AND \"appointments\".\"canceled_at\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.medspas": {
+      "name": "medspas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(300)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(254)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "medspas_address_unique": {
+          "name": "medspas_address_unique",
+          "columns": [
+            "address"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.services": {
+      "name": "services",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "medspa_id": {
+          "name": "medspa_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp (3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "services_medspa_id_medspas_id_fk": {
+          "name": "services_medspa_id_medspas_id_fk",
+          "tableFrom": "services",
+          "columnsFrom": [
+            "medspa_id"
+          ],
+          "tableTo": "medspas",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "services_medspa_id_name_unique": {
+          "name": "services_medspa_id_name_unique",
+          "columns": [
+            "medspa_id",
+            "name"
+          ],
+          "nullsNotDistinct": false
+        },
+        "services_id_medspa_id_unique": {
+          "name": "services_id_medspa_id_unique",
+          "columns": [
+            "id",
+            "medspa_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.appointment_status": {
+      "name": "appointment_status",
+      "schema": "public",
+      "values": [
+        "scheduled",
+        "completed",
+        "canceled"
+      ]
+    }
+  },
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
